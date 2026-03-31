@@ -20,19 +20,24 @@ Requires **Python 3.11+**. Lockfile is committed for reproducible environments.
 
 ## Google Analytics 4 MCP (Cursor / Claude-style clients)
 
-The common GA4 MCP servers (for example [`mcp-server-google-analytics`](https://github.com/ruchernchong/mcp-server-google-analytics)) authenticate with a **Google Cloud service account**, not by logging in as your Gmail user inside the MCP.
+The common GA4 MCP servers (for example [`mcp-server-google-analytics`](https://github.com/ruchernchong/mcp-server-google-analytics)) use a **Google Cloud service account** (JSON key). They do **not** support “sign in with Google” OAuth in the MCP the way a browser does—OAuth with your Gmail is possible in custom apps, but this npm server expects **service account** credentials.
 
 1. **GA4 access for `aberriz@gmail.com`**  
-   Ken should add your Google account to the GA4 property (Analyst or Viewer) so you can use the GA UI and confirm property ID.
+   Ken should add your Google account to the GA4 property (Analyst or Viewer) so you can use the GA UI and confirm the numeric **property ID**.
 
 2. **MCP access (service account)**  
-   - Create or pick a GCP project → enable **Google Analytics Data API**.  
-   - Create a **service account** → download JSON key.  
-   - In GA4 → **Admin → Property access management** → add the service account **`client_email`** with **Viewer**.  
-   - Set env vars (or Cursor MCP `env` block): `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` (escape newlines as `\n`), `GA_PROPERTY_ID` (numeric property ID).
+   - In [Google Cloud Console](https://console.cloud.google.com/): enable **Google Analytics Data API**.  
+   - **IAM → Service accounts** → create one → **Keys → Add key → JSON** (keep this file private).  
+   - In GA4 → **Admin → Property access management** → add the JSON’s **`client_email`** (`…@….iam.gserviceaccount.com`) with **Viewer**.  
+   - Map JSON → MCP env: `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` (PEM string with `\n` for newlines), `GA_PROPERTY_ID`.
 
-3. **Cursor**  
-   Add an MCP server entry that runs e.g. `npx -y mcp-server-google-analytics` with those env vars. Do **not** commit keys or `.env` (see `.gitignore`).
+3. **Cursor (install / configure now, fill secrets when ready)**  
+   - Needs **Node.js 20+** (for `npx`).  
+   - **Cursor → Settings → MCP** (or edit your MCP config): add a server that runs `npx` with args `-y`, `mcp-server-google-analytics` and the three `env` keys above.  
+   - Example block: [`docs/google-analytics-mcp.cursor.example.json`](docs/google-analytics-mcp.cursor.example.json) (copy values from your JSON key; do not commit them).  
+   - Until the key exists, you can still add the server with placeholders—the process will fail to auth until `GOOGLE_*` and `GA_PROPERTY_ID` are correct.
+
+Local overrides with real keys: use `~/.cursor/mcp.json` or project `.cursor/mcp.json` (see `.gitignore` if you keep secrets there).
 
 **URL-specific SEO:** GA4 reports are great for traffic, landing pages, and trends. For “audit this URL” (crawl, meta, redirects), combine MCP/GA with crawl tools (Screaming Frog, `curl`, or a small Python script in this repo later).
 

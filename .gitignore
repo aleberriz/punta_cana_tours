@@ -198,6 +198,9 @@ cython_debug/
 *:Zone.Identifier
 **/*:Zone.Identifier
 
+# Cursor — optional local MCP config (may contain GA service account material)
+.cursor/mcp.json
+
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
