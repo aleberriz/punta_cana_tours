@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "google-analytics": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-google-analytics"],
+      "env": {
+        "GOOGLE_CLIENT_EMAIL": "your-service-account@your-gcp-project.iam.gserviceaccount.com",
+        "GOOGLE_PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\\nPASTE_KEY_WITH_ESCAPED_NEWLINES\\n-----END PRIVATE KEY-----\\n",
+        "GA_PROPERTY_ID": "123456789"
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+[project]
+name = "punta-cana-tours"
+version = "0.1.0"
+description = "Workspace for Punta Cana yacht/tours SEO and analytics work (GA4, audits, stakeholder context)."
+authors = [
+    {name = "Alejandro Berrizbeitia", email = "aberriz@gmail.com"}
+]
+readme = "README.md"
+requires-python = "^3.11"
+dependencies = ["pandas (>=3.0.2,<4.0.0)", "requests (>=2.33.1,<3.0.0)", "beautifulsoup4 (>=4.14.3,<5.0.0)", "lxml (>=6.0.2,<7.0.0)"]
+
+[tool.poetry]
+package-mode = false
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

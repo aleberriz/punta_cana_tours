@@ -194,12 +194,23 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# Windows / WSL alternate data streams (e.g. files copied from Signal)
+*:Zone.Identifier
+**/*:Zone.Identifier
+
+# Cursor — optional local MCP config (may contain GA service account material)
+.cursor/mcp.json
+
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# GA4 manual exports (may contain sensitive traffic aggregates; folder kept via .gitkeep)
+data/ga4/exports/*
+!data/ga4/exports/.gitkeep
 
 # Marimo
 marimo/_static/
