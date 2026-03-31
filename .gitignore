@@ -208,6 +208,10 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# GA4 manual exports (may contain sensitive traffic aggregates; folder kept via .gitkeep)
+data/ga4/exports/*
+!data/ga4/exports/.gitkeep
+
 # Marimo
 marimo/_static/
 marimo/_lsp/
