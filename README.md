@@ -1,50 +1,95 @@
-# Punta Cana tours / PuntaCanaYachts SEO workspace
+# Punta Cana tours / PuntaCanaYachts SEO & SEM workspace
 
-Private workspace for analytics-backed SEO review of **https://puntacanayachts.com/** and related stakeholder context (TJ, Ken).
+Evidence-based SEO and SEM analysis workspace for **https://puntacanayachts.com/** — a Punta Cana yacht charter business (operating since 2008). Stakeholders: TJ (owner), Ken (developer).
+
+---
 
 ## Repository layout
 
 | Path | Purpose |
-|------|--------|
-| `docs/context/chat_conversations_stakeholders.md` | Exported Signal/thread notes: access asks, stack (custom PHP, MariaDB, nginx, GTM), redirects, sitemap link |
-| `docs/screenshots/` | Supporting screenshots from those conversations |
+|------|---------|
+| `docs/context/` | Stakeholder chat exports, Ken's technical responses |
+| `docs/screenshots/` | Supporting screenshots from conversations |
+| `docs/analysis/` | Dated findings documents and crawl reports |
+| `data/ga4/exports/` | Manual GA4 CSV exports (**gitignored** — place files here) |
+| `scripts/analyze_ga4.py` | Parse GA4 exports, detect redesign date, channel breakdown |
+| `scripts/crawl_site.py` | Live sitemap crawl, redirect audit, canonical/meta check |
 
-## Python (Poetry)
+---
+
+## Quickstart
 
 ```bash
 poetry install
-poetry run python ...
+
+# Analyse GA4 exports (place CSVs in data/ga4/exports/ first)
+poetry run python scripts/analyze_ga4.py
+
+# Live crawl of puntacanayachts.com (~35s, hits the network)
+poetry run python scripts/crawl_site.py
 ```
 
-Requires **Python 3.11+**. Lockfile is committed for reproducible environments.
+Requires **Python 3.11+**. Lockfile committed for reproducibility.
 
-## Google Analytics 4 MCP (Cursor / Claude-style clients)
+---
 
-The common GA4 MCP servers (for example [`mcp-server-google-analytics`](https://github.com/ruchernchong/mcp-server-google-analytics)) use a **Google Cloud service account** (JSON key). They do **not** support “sign in with Google” OAuth in the MCP the way a browser does—OAuth with your Gmail is possible in custom apps, but this npm server expects **service account** credentials.
+## Where we are (April 2026)
 
-1. **GA4 access for `aberriz@gmail.com`**  
-   Ken should add your Google account to the GA4 property (Analyst or Viewer) so you can use the GA UI and confirm the numeric **property ID**.
+### What was found and fixed
+- **Google Ads misconfigured at launch (March 3, 2026)** — restored ~March 15–19. This was the primary cause of the sales dip, not SEO.
+- **Canonical tags** — missing on all pages at launch, now fixed.
+- **Duplicate title tags** — fixed.
+- **Redirects** — 15/16 old WordPress paths correctly 301 to new `/charter/` paths.
 
-2. **MCP access (service account)**  
-   - In [Google Cloud Console](https://console.cloud.google.com/): enable **Google Analytics Data API**.  
-   - **IAM → Service accounts** → create one → **Keys → Add key → JSON** (keep this file private).  
-   - In GA4 → **Admin → Property access management** → add the JSON’s **`client_email`** (`…@….iam.gserviceaccount.com`) with **Viewer**.  
-   - Map JSON → MCP env: `GOOGLE_CLIENT_EMAIL`, `GOOGLE_PRIVATE_KEY` (PEM string with `\n` for newlines), `GA_PROPERTY_ID`.
+### Open issues
+| Issue | Priority |
+|-------|----------|
+| 3 of 5 Google Ads campaigns point to `/punta-cana-yacht-rentals/` (content page, not ideal for paid) | High |
+| New content pages orphaned — no inbound internal links from main site | Medium |
+| Homepage has no contact/quote form | Medium |
+| Ken's GTM testing sessions still polluting GA4 (~56/month) | Low |
+| `/charter/romantic-cruise-for-two/` returns 404 — one ad still references it | Medium |
 
-3. **Cursor (install / configure now, fill secrets when ready)**  
-   - Needs **Node.js 20+** (for `npx`).  
-   - **Cursor → Settings → MCP** (or edit your MCP config): add a server that runs `npx` with args `-y`, `mcp-server-google-analytics` and the three `env` keys above.  
-   - Example block: [`docs/google-analytics-mcp.cursor.example.json`](docs/google-analytics-mcp.cursor.example.json) (copy values from your JSON key; do not commit them).  
-   - Until the key exists, you can still add the server with placeholders—the process will fail to auth until `GOOGLE_*` and `GA_PROPERTY_ID` are correct.
+### What to read
+- `docs/analysis/2026-04-01_findings-for-ken.md` — plain-language first-round findings (sent to Ken)
+- `docs/analysis/2026-04-02_second-round-findings.md` — post-fix analysis with paid traffic breakdown
 
-Local overrides with real keys: use `~/.cursor/mcp.json` or project `.cursor/mcp.json` (see `.gitignore` if you keep secrets there).
+---
 
-**URL-specific SEO:** GA4 reports are great for traffic, landing pages, and trends. For “audit this URL” (crawl, meta, redirects), combine MCP/GA with crawl tools (Screaming Frog, `curl`, or a small Python script in this repo later).
+## Google Analytics 4 MCP (Cursor)
 
-## Conventional commits
+The GA4 MCP uses a **GCP service account** (not your Gmail login). Setup:
 
-Use [Conventional Commits](https://www.conventionalcommits.org/), for example: `chore: add poetry and docs layout`, `docs: document GA4 MCP setup`.
+1. [Google Cloud Console](https://console.cloud.google.com/) → enable **Google Analytics Data API**
+2. **IAM → Service accounts** → create → **Keys → Add key → JSON**
+3. GA4 → **Admin → Property access management** → add the JSON's `client_email` as **Viewer**
+4. Add to Cursor MCP config (see example: `docs/google-analytics-mcp.cursor.example.json`):
 
-## Branch
+```json
+{
+  "mcpServers": {
+    "google-analytics": {
+      "command": "npx",
+      "args": ["-y", "mcp-server-google-analytics"],
+      "env": {
+        "GOOGLE_CLIENT_EMAIL": "your-sa@your-project.iam.gserviceaccount.com",
+        "GOOGLE_PRIVATE_KEY": "-----BEGIN PRIVATE KEY-----\\n...\\n-----END PRIVATE KEY-----\\n",
+        "GA_PROPERTY_ID": "123456789"
+      }
+    }
+  }
+}
+```
 
-Active setup work: `chore/repo-init` (or follow-up branches per task).
+Keep credentials in `~/.cursor/mcp.json` or `.cursor/mcp.json` (gitignored). Never commit keys.
+
+**Note:** `mcp-server-google-analytics` (npm) is deprecated. Prefer the [Google Analytics Data API](https://developers.google.com/analytics/devguides/reporting/data/v1) directly via `scripts/` once credentials are available.
+
+---
+
+## Git conventions
+
+- [Conventional Commits](https://www.conventionalcommits.org/): `feat:`, `fix:`, `docs:`, `chore:`, `analysis:`
+- One branch per task; validate commit message with human before committing
+- After each PR merge: `git checkout main && git pull origin main && git branch -d <branch>`
+- Delete stale remote branches: `git push origin --delete <branch>`
