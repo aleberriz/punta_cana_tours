@@ -16,6 +16,42 @@ Evidence-based SEO and SEM analysis workspace for **https://puntacanayachts.com/
 | `scripts/crawl_site.py` | Live sitemap crawl, redirect audit, canonical/meta check |
 | `scripts/fetch_ga4.py` | Pull GA4 via **Data API** (OAuth or service account; no CSV) |
 | `scripts/fetch_google_ads.py` | Pull Google Ads via **Ads API** + GAQL (OAuth; see `.env.example`) |
+| `scripts/generate_report.py` | Build the unified **HTML** report (GA4 + Ads + crawl); `make report` |
+| `Makefile` | `make report` — runs `generate_report.py` with optional env overrides |
+
+---
+
+## HTML growth report (`make report`)
+
+**What it does:** Writes **`reports/latest/index.html`** — a single local dashboard that combines **GA4** (daily sessions, key events, channels, landing pages), **Google Ads** (campaigns and search terms over the same windows), and a **live crawl** of the sitemap (redirects, canonicals, meta, JSON-LD, external links). Plotly charts, period comparisons, recommendations, and a short “before next run” checklist (including GA4 vs Ads conversion sanity checks when relevant).
+
+**How to run:** Install deps, add secrets locally (see below), place or point to an OAuth Desktop client JSON (`client_secret*.json` under `data/ga4/` or `data/google_ads/`, or set `OAUTH_CLIENT` when calling Make). Repo-root **`.env`** is loaded automatically for Ads (and optional `GA4_PROPERTY_ID`).
+
+```bash
+poetry install
+cp .env.example .env   # fill GOOGLE_ADS_DEVELOPER_TOKEN, GOOGLE_ADS_CUSTOMER_ID, etc.
+make report
+# Optional: OAUTH_CLIENT=/absolute/path/to/client_secret….json make report
+poetry run python scripts/generate_report.py --help   # e.g. --skip-crawl for traffic-only
+```
+
+The HTML output path is **gitignored**; regenerate anytime. First OAuth run opens a browser; refresh tokens are stored under `data/` (ignored).
+
+---
+
+## Local secrets and tokens (not in Git)
+
+If you delete this folder and re-clone, **restore or recreate** these (they are never committed):
+
+| Item | Purpose |
+|------|---------|
+| `.env` | Ads developer token and customer IDs — copy from `.env.example` and refill |
+| `data/ga4/client_secret*.json` (or your chosen path) | OAuth “Desktop app” client from Google Cloud Console |
+| `data/ga4/oauth-token.json` | GA4 OAuth refresh token (re-created by signing in again if missing) |
+| `data/google_ads/oauth-token.json` | Google Ads OAuth refresh token |
+| Optional GA4 CSVs in `data/ga4/exports/` | Manual exports for `analyze_ga4.py` |
+
+**Backups:** Encrypted disk, password-manager secure notes, or **encrypted** files in a private repo (e.g. [sops](https://github.com/mozilla/sops) / age, [git-crypt](https://github.com/AGWA/git-crypt)) are appropriate for `.env` and OAuth JSON. A **private dotfiles repo** is a good home for **shell config and install scripts**; avoid storing **plaintext** OAuth clients and refresh tokens there even if the repo is private (risk of accidental exposure, fork leaks, or laptop copy). Prefer a password manager or encrypted blob, then copy files into this repo after clone.
 
 ---
 
@@ -83,6 +119,9 @@ poetry run python scripts/analyze_ga4.py
 
 # Live crawl of puntacanayachts.com (~35s, hits the network)
 poetry run python scripts/crawl_site.py
+
+# Unified HTML report (needs .env + OAuth client JSON — see "HTML growth report")
+# make report
 
 # GA4 / Google Ads API pulls (see sections below; Ads script auto-loads repo-root .env)
 # poetry run python scripts/fetch_ga4.py --oauth-client …

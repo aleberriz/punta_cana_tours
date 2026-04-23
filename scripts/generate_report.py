@@ -311,8 +311,6 @@ def load_ga4(args: argparse.Namespace, dates: dict[str, date]) -> dict[str, pd.D
 
 
 def load_google_ads(args: argparse.Namespace, dates: dict[str, date]) -> dict[str, pd.DataFrame]:
-    fetch_google_ads._load_dotenv_simple()
-
     oauth_client = args.oauth_client or autodetect_oauth_client()
     developer_token = (
         args.developer_token.strip() or fetch_google_ads.os.environ.get("GOOGLE_ADS_DEVELOPER_TOKEN", "").strip()
@@ -1126,6 +1124,7 @@ def build_html(
 
 def main() -> int:
     args = parse_args()
+    fetch_google_ads._load_dotenv_simple()
 
     if args.oauth_client and not args.oauth_client.is_file():
         raise FileNotFoundError(f"OAuth client file not found: {args.oauth_client}")
