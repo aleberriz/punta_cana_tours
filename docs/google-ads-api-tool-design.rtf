@@ -1,0 +1,29 @@
+{\rtf1\ansi\deff0{\fonttbl{\f0\fswiss Arial;}}
+\f0\fs24
+{\b Google Ads API Tool - Design Document (Internal Reporting)}\par
+\par
+{\b 1. Purpose}\par
+Command-line utilities under active development in a private Git repository. The primary advertiser supported is {\b Punta Cana Yachts} (puntacanayachts.com), whose Google Ads client account is linked under our manager account (MCC). The tools download read-only performance and structure data for that linked account (and the same MCC where applicable), export CSV files for analysis, and support marketing performance reviews alongside Google Analytics 4 exports. No bid changes, budget edits, or creative uploads are performed via the API.\par
+\par
+{\b 2. Scope of API usage}\par
+{\b Reporting only:} Campaign-level metrics (impressions, clicks, cost, conversions) and search-term reports over user-selected date ranges, using Google Ads Query Language (GAQL) via the official REST Search endpoint. Optional future extensions: additional read-only GAQL reports (e.g. ad groups, keywords) for the same accounts.\par
+\par
+{\b 3. Architecture}\par
+{\b Language:} Python 3.11+\par
+{\b Transport:} HTTPS POST to googleads.googleapis.com (REST), JSON request/response. No third-party Google Ads SDK required for transport.\par
+{\b Authentication:} OAuth 2.0 desktop flow; refresh tokens stored locally on the operator workstation. Access tokens refreshed with Google auth libraries.\par
+{\b Configuration:} Developer token, client customer ID, and login-customer-id (MCC) supplied via environment variables or a local .env file excluded from version control.\par
+{\b Outputs:} CSV files written to a local data directory; credentials and exports are gitignored.\par
+\par
+{\b 4. Security and access control}\par
+The tool is run manually by a single technical operator (internal/contractor). OAuth client secrets and tokens are not shared, not embedded in binaries, and not committed to the repository. Reports are shared with business stakeholders as static files or summaries only; stakeholders do not receive API credentials or direct API access.\par
+\par
+{\b 5. Rate limiting and reliability}\par
+Pagination with conservative page sizes; scripts are run on-demand (not as a high-frequency production service). Errors are surfaced in the terminal log for operator review.\par
+\par
+{\b 6. Compliance}\par
+Use follows Google Ads API Terms of Service. The application is for Basic Access to support read-only reporting on production accounts already linked under our MCC, including Punta Cana Yachts, with advertiser consent.\par
+\par
+{\b 7. Contact}\par
+Primary technical contact matches the email on file in API Center. Company website provided in the application form.\par
+}

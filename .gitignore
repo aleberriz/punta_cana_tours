@@ -208,9 +208,29 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
-# GA4 manual exports (may contain sensitive traffic aggregates; folder kept via .gitkeep)
+# GA4 manual exports (may contain sensitive traffic aggregates; folders kept via .gitkeep)
 data/ga4/exports/*
 !data/ga4/exports/.gitkeep
+!data/ga4/exports/historical-trend/
+data/ga4/exports/historical-trend/*
+!data/ga4/exports/historical-trend/.gitkeep
+
+# GA4 Data API — OAuth token + client secret (never commit)
+data/ga4/oauth-token.json
+data/ga4/client_secret*.json
+**/ga4-*-client*.json
+
+# Google Ads API — OAuth token and exports (never commit secrets)
+data/google_ads/oauth-token.json
+data/google_ads/exports/*
+!data/google_ads/exports/.gitkeep
+
+# Generated HTML reports (`make report` writes here)
+reports/latest/*
+!reports/latest/.gitkeep
+
+# Local env (may hold Ads developer token, etc.)
+.env
 
 # Marimo
 marimo/_static/

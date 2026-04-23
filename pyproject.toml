@@ -6,8 +6,8 @@ authors = [
     {name = "Alejandro Berrizbeitia", email = "aberriz@gmail.com"}
 ]
 readme = "README.md"
-requires-python = "^3.11"
-dependencies = ["pandas (>=3.0.2,<4.0.0)", "requests (>=2.33.1,<3.0.0)", "beautifulsoup4 (>=4.14.3,<5.0.0)", "lxml (>=6.0.2,<7.0.0)"]
+requires-python = ">=3.11,<3.14"
+dependencies = ["pandas (>=3.0.2,<4.0.0)", "requests (>=2.33.1,<3.0.0)", "beautifulsoup4 (>=4.14.3,<5.0.0)", "lxml (>=6.0.2,<7.0.0)", "google-analytics-data (>=0.18,<1)", "google-auth-oauthlib (>=1.2,<2)", "google-auth-httplib2 (>=0.2,<1)", "google-ads (>=26,<27)", "plotly (>=6.7.0,<7.0.0)"]
 
 [tool.poetry]
 package-mode = false
