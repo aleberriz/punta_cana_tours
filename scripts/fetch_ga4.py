@@ -170,9 +170,13 @@ def run_events_by_name(
             ],
             order_bys=[
                 OrderBy(
+                    metric=OrderBy.MetricOrderBy(metric_name="keyEvents"),
+                    desc=True,
+                ),
+                OrderBy(
                     metric=OrderBy.MetricOrderBy(metric_name="eventCount"),
                     desc=True,
-                )
+                ),
             ],
             limit=limit,
         )
